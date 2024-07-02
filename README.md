@@ -6,7 +6,7 @@ Workshop elaborado para a atividade do BRISA que envolve o uso da biblioteca Scr
 
 ## PASSOS:
 
-0. Configurar o ambiente:
+1. Configurar o ambiente:
 
 ```bash
 # Instalando o gerenciador de container

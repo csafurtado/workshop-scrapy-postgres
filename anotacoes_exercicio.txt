@@ -1,0 +1,19 @@
+Tabela anúncios_df:
+site: https://www.wimoveis.com.br/venda/imoveis/df/brasilia
+	tipo (apto, casa)
+	valor
+	qtd_quartos
+	qtd_vagas
+	descricao
+	avaliacao
+	endereco
+	anunciante
+
+Tabela anunciantes_df:
+site: https://www.wimoveis.com.br/imobiliarias-brasilia-df.html
+	nome
+	endereco
+	telefone (talvez)
+	saiba_mais
+	
+Apagar pasta db_data para apagar as tabelas anteriores
