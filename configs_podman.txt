@@ -1,0 +1,55 @@
+{
+   "args": {
+      "podman_labels": {
+         "com.docker.compose.project": "workshop_brisa",
+         "io.podman.compose.project": "workshop_brisa"
+      }
+   },
+   "cniVersion": "0.4.0",
+   "name": "workshop_brisa_default",
+   "plugins": [
+      {
+         "type": "bridge",
+         "bridge": "cni-podman3",
+         "isGateway": true,
+         "ipMasq": true,
+         "hairpinMode": true,
+         "ipam": {
+            "type": "host-local",
+            "routes": [
+               {
+                  "dst": "0.0.0.0/0"
+               }
+            ],
+            "ranges": [
+               [
+                  {
+                     "subnet": "10.89.2.0/24",
+                     "gateway": "10.89.2.1"
+                  }
+               ]
+            ]
+         }
+      },
+      {
+         "type": "portmap",
+         "capabilities": {
+            "portMappings": true
+         }
+      },
+      {
+         "type": "firewall",
+         "backend": ""
+      },
+      {
+         "type": "tuning"
+      },
+      {
+         "type": "dnsname",
+         "domainName": "dns.podman",
+         "capabilities": {
+            "aliases": true
+         }
+      }
+   ]
+}

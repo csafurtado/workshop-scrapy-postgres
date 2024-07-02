@@ -1,0 +1,15 @@
+version: '3'
+
+name: workshop_brisa
+services:
+  db:
+    image: docker.io/library/postgres:12
+    environment:
+      POSTGRES_DB: workshop_brisa
+      POSTGRES_USER: brisers
+      POSTGRES_PASSWORD: brisafga
+    volumes:
+      - ./dbdata:/var/lib/postgresql/data
+      - ./data/pre_load.sql:/docker-entrypoint-initdb.d/pre_load.sql
+    ports:
+      - 44444:5432
