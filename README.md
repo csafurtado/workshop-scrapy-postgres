@@ -27,3 +27,11 @@ podman-compose up --detach
 ```bash
 cat configs_podman.txt  > ~/.config/cni/net.d/workshop_brisa_default.conflist
 ```
+
+2. Iniciar um projeto scrapy pelo comando no terminal:
+
+```bash
+scrapy startproject workshopbrisa
+```
+
+3. 

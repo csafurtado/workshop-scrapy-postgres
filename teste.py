@@ -12,15 +12,13 @@ user = os.getenv('DB_USER')
 password = os.getenv('DB_PASSWORD')
 
 
-print(user)
-
 try:
     # Conecta ao banco de dados
     conn = psycopg2.connect(host=host, port=port, dbname=dbname, user=user, password=password)
     cursor = conn.cursor()
 
     # Executa a consulta
-    cursor.execute('SELECT * FROM customers;')
+    cursor.execute('SELECT * FROM anuncios_df;')
     rows = cursor.fetchall()
 
     # Exibe os resultados
