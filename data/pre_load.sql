@@ -20,32 +20,47 @@ SET default_with_oids = false;
 --- drop tables
 ---
 
-DROP TABLE IF EXISTS anuncios_df;
-DROP TABLE IF EXISTS anunciantes_df;
+DROP TABLE IF EXISTS pilotos;
+DROP TABLE IF EXISTS equipes;
+DROP TABLE IF EXISTS resultados_corridas;
 
 ---
 --- create table
 ---
 
-
-CREATE TABLE anunciantes (
+CREATE TABLE equipes (
     nome VARCHAR(100) PRIMARY KEY,
-    endereco VARCHAR(200) NOT NULL,
-    telefone VARCHAR(14),
-    saiba_mais VARCHAR(1000)
+    localizacao_base VARCHAR(100),
+    chefe_equipe VARCHAR(100),
+    chefe_tecnico VARCHAR(100),
+    chassis_carro VARCHAR(50),
+    unidade_potencia VARCHAR (50),
+    campeonatos_mundiais NUMERIC,
+    data_estreia DATE
 );
 
-CREATE TABLE anuncios_df (
-    anuncio_id SERIAL PRIMARY KEY,
-    tipo_imovel VARCHAR(20) NOT NULL,
-    valor DECIMAL NOT NULL,
-    qtd_quartos INTEGER,
-    qtd_vagas INTEGER,
-    descricao VARCHAR(2000),
-    avaliacao DECIMAL,
-    endereco VARCHAR(255) NOT NULL,
-    anunciante VARCHAR(100) NOT NULL,
-    FOREIGN KEY (anunciante) REFERENCES anunciantes(nome)
+CREATE TABLE pilotos (
+    nome VARCHAR(100) PRIMARY KEY,
+    equipe VARCHAR(100),
+    pais_origem VARCHAR(50),
+    podiums NUMERIC,
+    pontos_carreira NUMERIC,
+    campeonatos_mundiais NUMERIC,
+    data_nascimento DATE,
+    
+    FOREIGN KEY (equipe) REFERENCES equipes(nome)
+);
+
+CREATE TABLE resultados_corridas (
+    grande_premio VARCHAR(100) NOT NULL,
+    data_gp DATE NOT NULL,
+    piloto_vencedor VARCHAR(100),
+    equipe VARCHAR(100),
+    voltas NUMERIC,
+    tempo_total TIMESTAMP,
+    
+    FOREIGN KEY (piloto_vencedor) REFERENCES pilotos(nome),
+    FOREIGN KEY (equipe) REFERENCES equipes(nome)
 );
 
 ---

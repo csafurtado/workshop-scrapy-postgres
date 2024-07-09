@@ -1,19 +1,35 @@
-Tabela anúncios_df:
-site: https://www.wimoveis.com.br/venda/imoveis/df/brasilia
-	tipo (apto, casa)
-	valor
-	qtd_quartos
-	qtd_vagas
-	descricao
-	avaliacao
-	endereco
-	anunciante
-
-Tabela anunciantes_df:
-site: https://www.wimoveis.com.br/imobiliarias-brasilia-df.html
+Tabela pilotos:
+site: https://www.formula1.com/en/drivers
 	nome
-	endereco
-	telefone (talvez)
-	saiba_mais
+	equipe (FK)
+	pais_origem
+	podiums
+	pontos_carreira
+	campeonatos_mundiais
+	data_nascimento
+	(vitorias)
+	(pole_positions)
+
+Tabela equipes:
+site: https://www.formula1.com/en/teams
+	nome
+	localizacao_base
+	chefe_equipe
+	chefe_tecnico
+	chassis_carro
+	unidade_potencia
+	campeonatos_mundiais
+	data_estreia
+	(vitorias)
 	
+Tabela resultados_corridas
+site: https://www.formula1.com/en/results.html/<ano>/races.html
+	grande_premio
+	data
+	vencedor
+	equipe
+	voltas
+	tempo_total
+
+
 Apagar pasta db_data para apagar as tabelas anteriores

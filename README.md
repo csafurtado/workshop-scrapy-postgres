@@ -34,4 +34,40 @@ cat configs_podman.txt  > ~/.config/cni/net.d/workshop_brisa_default.conflist
 scrapy startproject workshopbrisa
 ```
 
-3. 
+3. Criar os itens de dados que serão raspados e os spiders (raspadores) respectivos
+
+```py
+# No arquivo items.py
+class PilotosItem(Item):
+    nome = Field()
+    equipe  = Field()
+    pais_origem = Field()
+    podiums = Field()
+    pontos_carreira = Field()
+    campeonatos_mundiais = Field()
+    data_nascimento = Field()
+
+class EquipesItem(Item):
+	nome = Field()
+	localizacao_base = Field()
+	chefe_equipe = Field()
+	chefe_tecnico = Field()
+	chassis_carro = Field()
+	unidade_potencia = Field()
+	campeonatos_mundiais = Field()
+	data_estreia = Field()
+
+class ResultadoCorridasItem(Item):
+    grande_premio = Field()
+    data = Field()
+    vencedor = Field()
+    equipe = Field()
+    voltas = Field()
+    tempo_total = Field()
+```
+
+```py
+# Criar os arquivos pilotosscraper.py, equipesscraper.py e resultados_corridasscraper.py
+
+
+```
