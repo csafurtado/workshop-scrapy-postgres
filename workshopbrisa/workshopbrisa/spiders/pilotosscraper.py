@@ -3,7 +3,7 @@ from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import PilotosItem
 
 class PilotosScraper(CrawlSpider):
-    name = "pilotosscraper"
+    name = "pilotos_scraper"
     start_urls = ["https://www.formula1.com/en/drivers.html"]
 
     rules = (

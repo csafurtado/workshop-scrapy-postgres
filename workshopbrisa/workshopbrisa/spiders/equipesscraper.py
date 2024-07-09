@@ -3,7 +3,7 @@ from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import EquipesItem
 
 class EquipesScraper(CrawlSpider):
-    name = "equipesscraper"
+    name = "equipes_scraper"
     start_urls = ["https://www.formula1.com/en/teams.html"]
 
     rules = (

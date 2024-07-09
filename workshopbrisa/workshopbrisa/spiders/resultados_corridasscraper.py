@@ -1,42 +1,50 @@
-from scrapy.spiders import CrawlSpider, Rule
+from scrapy import Request
+from scrapy.spiders import CrawlSpider
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import ResultadoCorridasItem
 
-class ResultadosCorridasScraper(CrawlSpider):
-    name = "resultados_corridasscraper"
-    start_urls = ["https://www.formula1.com/en/results.html/2022/races.html"]
+class ResultadoCorridasScraper(CrawlSpider):
+    name = "resultadoscorridas_scraper"
+    
+    # Definindo os anos de interesse
+    anos = range(2022, 2024)  # Exemplo: anos de 2022 a 2024
+    
+    # Gerando as URLs dinamicamente
+    start_urls = [f"https://www.formula1.com/en/results.html/{ano}/races.html" for ano in anos]
 
-    rules = (
-        Rule(LinkExtractor(restrict_css="div.flex.flex-col.tablet\\:grid.tablet\\:grid-cols-12 a.outline.outline-offset-4.outline-brand-black.group"), callback="parse_resultados_corridas"),
-    )
+    def start_requests(self):
+        for url in self.start_urls:
+            yield Request(url=url, callback=self.parse)
 
-    def parse_resultados_corridas(self, response):
-        piloto_item = PilotosItem()
-        
-        # Encontrando a <dl> com a classe específica
-        dl_elements = response.css('dl.grid.gap-x-normal.gap-y-xs.f1-grid.grid-cols-1.tablet\\:grid-cols-2.items-baseline')
+    def parse(self, response):
+        # Encontrando a tabela específica
+        tabela_resultados_ano = response.css('div.table-wrap table.resultsarchive-table')
 
-        # Extraindo todos os <dd> dentro da <dl> específica
-        dd_elements = dl_elements.css('dd::text').getall()
+        # Extraindo os dados da tabela
+        for linha in tabela_resultados_ano.css('tr'):
+            # blabla = {
+            #     'Grand Prix': linha.css('td:nth-child(0) a::text').get().strip(),
+            #     'Date': linha.css('td:nth-child(1)::text').get().strip(),
+            #     'Winner': linha.css('td:nth-child(2) span.hide-for-mobile::text').get().strip(),
+            #     'Car': linha.css('td:nth-child(3)::text').get().strip(),
+            #     'Laps': linha.css('td:nth-child(4)::text').get().strip(),
+            #     'Time': linha.css('td:nth-child(5)::text').get().strip(),
+            # }
+            
+            # print(blabla)
 
-        info_piloto = {
-            "nome": response.css('div.f1-container.container.f1-utils-flex-container h1.f1-heading.tracking-normal::text').get(),
-            "equipe": dd_elements[0],
-            "pais_origem": dd_elements[1],
-            "podiums": dd_elements[2],
-            "pontos_carreira": dd_elements[3],
-            "campeonatos_mundiais": dd_elements[5],
-            "data_nascimento": dd_elements[8],
-        }
+            # yield blabla
+            item = ResultadoCorridasItem()
 
-        # Exemplo de como capturar outros campos (ajustar de acordo com a estrutura real)
-        piloto_item["nome"] = info_piloto["nome"]
-        piloto_item["equipe"] = info_piloto["equipe"]
-        piloto_item["pais_origem"] = info_piloto["pais_origem"]
-        piloto_item["podiums"] = info_piloto["podiums"]
-        piloto_item["pontos_carreira"] = info_piloto["pontos_carreira"]
-        piloto_item["campeonatos_mundiais"] = info_piloto["campeonatos_mundiais"]
-        piloto_item["data_nascimento"] = info_piloto["data_nascimento"]
-        
-        return piloto_item
+            # td_elementos = linha.css('td').get
 
+            print(linha)
+
+            # item["grande_premio"] = td_elementos[0].css('a::text').get()
+            # item["data"] = td_elementos[1].get()
+            # item["vencedor"] = td_elementos[2].css('span.hide-for-tablet::text').get() + " " +td_elementos[2].css('span.hide-for-mobile::text').get()
+            # item["equipe"] = td_elementos[3].get()
+            # item["voltas"] = td_elementos[4].get()
+            # item["tempo_total"] = td_elementos[5].get()
+
+            yield item
