@@ -27,6 +27,7 @@ class PilotosScraper(CrawlSpider):
             "pontos_carreira": dd_elements[3],
             "campeonatos_mundiais": dd_elements[5],
             "data_nascimento": dd_elements[8],
+            "bio": " ".join(list(response.css('div.f1-atomic-wysiwyg p::text').getall())),
         }
 
         # Exemplo de como capturar outros campos (ajustar de acordo com a estrutura real)
@@ -37,6 +38,7 @@ class PilotosScraper(CrawlSpider):
         piloto_item["pontos_carreira"] = info_piloto["pontos_carreira"]
         piloto_item["campeonatos_mundiais"] = info_piloto["campeonatos_mundiais"]
         piloto_item["data_nascimento"] = info_piloto["data_nascimento"]
+        piloto_item["bio"] = info_piloto["bio"]
         
         return piloto_item
 

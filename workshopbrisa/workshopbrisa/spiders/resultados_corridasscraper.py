@@ -3,6 +3,7 @@ from scrapy.spiders import CrawlSpider
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import ResultadoCorridasItem
 
+
 class ResultadoCorridasScraper(CrawlSpider):
     name = "resultadoscorridas_scraper"
     
@@ -22,29 +23,13 @@ class ResultadoCorridasScraper(CrawlSpider):
 
         # Extraindo os dados da tabela
         for linha in tabela_resultados_ano.css('tr'):
-            # blabla = {
-            #     'Grand Prix': linha.css('td:nth-child(0) a::text').get().strip(),
-            #     'Date': linha.css('td:nth-child(1)::text').get().strip(),
-            #     'Winner': linha.css('td:nth-child(2) span.hide-for-mobile::text').get().strip(),
-            #     'Car': linha.css('td:nth-child(3)::text').get().strip(),
-            #     'Laps': linha.css('td:nth-child(4)::text').get().strip(),
-            #     'Time': linha.css('td:nth-child(5)::text').get().strip(),
-            # }
-            
-            # print(blabla)
-
-            # yield blabla
             item = ResultadoCorridasItem()
 
-            # td_elementos = linha.css('td').get
-
-            print(linha)
-
-            # item["grande_premio"] = td_elementos[0].css('a::text').get()
-            # item["data"] = td_elementos[1].get()
-            # item["vencedor"] = td_elementos[2].css('span.hide-for-tablet::text').get() + " " +td_elementos[2].css('span.hide-for-mobile::text').get()
-            # item["equipe"] = td_elementos[3].get()
-            # item["voltas"] = td_elementos[4].get()
-            # item["tempo_total"] = td_elementos[5].get()
+            item["grande_premio"] = str(linha.css('td a::text').get()).strip()
+            item["data"] = linha.css('td:nth-child(3)::text').get()
+            item["vencedor"] = f"{linha.css('td:nth-child(4) span.hide-for-tablet::text').get()} {linha.css('td:nth-child(4) span.hide-for-mobile::text').get()}"
+            item["equipe"] = linha.css('td:nth-child(5)::text').get()
+            item["voltas"] = linha.css('td:nth-child(6)::text').get()
+            item["tempo_total"] = linha.css('td:nth-child(7)::text').get()
 
             yield item

@@ -36,7 +36,8 @@ CREATE TABLE equipes (
     chassis_carro VARCHAR(50),
     unidade_potencia VARCHAR (50),
     campeonatos_mundiais NUMERIC,
-    data_estreia DATE
+    ano_estreia NUMERIC,
+    bio TEXT
 );
 
 CREATE TABLE pilotos (
@@ -44,11 +45,10 @@ CREATE TABLE pilotos (
     equipe VARCHAR(100),
     pais_origem VARCHAR(50),
     podiums NUMERIC,
-    pontos_carreira NUMERIC,
+    pontos_carreira NUMERIC(6, 1),
     campeonatos_mundiais NUMERIC,
     data_nascimento DATE,
-    
-    FOREIGN KEY (equipe) REFERENCES equipes(nome)
+    bio TEXT
 );
 
 CREATE TABLE resultados_corridas (
@@ -57,14 +57,5 @@ CREATE TABLE resultados_corridas (
     piloto_vencedor VARCHAR(100),
     equipe VARCHAR(100),
     voltas NUMERIC,
-    tempo_total TIMESTAMP,
-    
-    FOREIGN KEY (piloto_vencedor) REFERENCES pilotos(nome),
-    FOREIGN KEY (equipe) REFERENCES equipes(nome)
+    tempo_total INTERVAL
 );
-
----
---- alter table
----
-
--- ALTER TABLE 

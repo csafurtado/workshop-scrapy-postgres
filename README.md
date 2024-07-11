@@ -34,7 +34,7 @@ cat configs_podman.txt  > ~/.config/cni/net.d/workshop_brisa_default.conflist
 scrapy startproject workshopbrisa
 ```
 
-3. Criar os itens de dados que serão raspados e os spiders (raspadores) respectivos
+3. Criar os itens de dados que serão raspados
 
 ```py
 # No arquivo items.py
@@ -66,8 +66,16 @@ class ResultadoCorridasItem(Item):
     tempo_total = Field()
 ```
 
+4. Criar os arquivos que ficaram responsáveis pela raspagem dos dados, acessando o site e retirando as informações
+
 ```py
-# Criar os arquivos pilotosscraper.py, equipesscraper.py e resultados_corridasscraper.py
+# pilotosscraper.py, equipesscraper.py e resultados_corridasscraper.py
 
 
 ```
+
+5. Criar o arquivo pipeline.py que fará o tratamento dos dados coletados em cada raspador e o salvamento no banco de dados (cada raspador terá seu pipeline)
+```py
+```
+
+6. Configurar cada pipeline no settings.py do projeto

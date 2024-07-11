@@ -91,3 +91,8 @@ ROBOTSTXT_OBEY = True
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+# Set spiders configurations
+ITEM_PIPELINES = {
+    'workshopbrisa.pipelines.WorkshopbrisaPipeline': 300,
+}

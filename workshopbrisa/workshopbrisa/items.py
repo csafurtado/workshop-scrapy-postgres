@@ -9,6 +9,7 @@ class PilotosItem(Item):
     pontos_carreira = Field()
     campeonatos_mundiais = Field()
     data_nascimento = Field()
+    bio = Field()
 
 class EquipesItem(Item):
     nome = Field()
@@ -19,7 +20,8 @@ class EquipesItem(Item):
     chassis_carro = Field()
     unidade_potencia = Field()
     campeonatos_mundiais = Field()
-    data_estreia = Field()
+    ano_estreia = Field()
+    bio = Field()
 
 class ResultadoCorridasItem(Item):
     grande_premio = Field()

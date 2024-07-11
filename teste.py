@@ -18,7 +18,7 @@ try:
     cursor = conn.cursor()
 
     # Executa a consulta
-    cursor.execute('SELECT * FROM anuncios_df;')
+    cursor.execute('SELECT * FROM pilotos;')
     rows = cursor.fetchall()
 
     # Exibe os resultados

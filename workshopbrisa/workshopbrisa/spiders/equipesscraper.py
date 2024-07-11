@@ -2,6 +2,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import EquipesItem
 
+
 class EquipesScraper(CrawlSpider):
     name = "equipes_scraper"
     start_urls = ["https://www.formula1.com/en/teams.html"]
@@ -27,8 +28,9 @@ class EquipesScraper(CrawlSpider):
             "chefe_tecnico": dd_elements[3],
             "chassis_carro": dd_elements[4],
             "unidade_potencia": dd_elements[5],
-            "data_estreia": dd_elements[6],
+            "ano_estreia": dd_elements[6],
             "campeonatos_mundiais": dd_elements[7],
+            "bio": response.css('div.f1-atomic-wysiwyg p::text').getall()[0],
         }
         
         print(dd_elements)
@@ -42,7 +44,8 @@ class EquipesScraper(CrawlSpider):
         equipe_item["chassis_carro"] = info_equipe["chassis_carro"]
         equipe_item["unidade_potencia"] = info_equipe["unidade_potencia"]
         equipe_item["campeonatos_mundiais"] = info_equipe["campeonatos_mundiais"]
-        equipe_item["data_estreia"] = info_equipe["data_estreia"]
+        equipe_item["ano_estreia"] = info_equipe["ano_estreia"]
+        equipe_item["bio"] = info_equipe["bio"]
 
         return equipe_item
 
