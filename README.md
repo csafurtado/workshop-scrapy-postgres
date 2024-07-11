@@ -46,16 +46,19 @@ class PilotosItem(Item):
     pontos_carreira = Field()
     campeonatos_mundiais = Field()
     data_nascimento = Field()
+    bio = Field()
 
 class EquipesItem(Item):
-	nome = Field()
-	localizacao_base = Field()
-	chefe_equipe = Field()
-	chefe_tecnico = Field()
-	chassis_carro = Field()
-	unidade_potencia = Field()
-	campeonatos_mundiais = Field()
-	data_estreia = Field()
+    nome = Field()
+    nome_completo = Field()
+    localizacao_base = Field()
+    chefe_equipe = Field()
+    chefe_tecnico = Field()
+    chassis_carro = Field()
+    unidade_potencia = Field()
+    campeonatos_mundiais = Field()
+    ano_estreia = Field()
+    bio = Field()
 
 class ResultadoCorridasItem(Item):
     grande_premio = Field()
@@ -69,13 +72,238 @@ class ResultadoCorridasItem(Item):
 4. Criar os arquivos que ficaram responsáveis pela raspagem dos dados, acessando o site e retirando as informações
 
 ```py
-# pilotosscraper.py, equipesscraper.py e resultados_corridasscraper.py
+# pilotosscraper.py, 
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
+from workshopbrisa.items import PilotosItem
 
+class PilotosScraper(CrawlSpider):
+    name = "pilotos_scraper"
+    start_urls = ["https://www.formula1.com/en/drivers.html"]
+
+    rules = (
+        Rule(LinkExtractor(restrict_css="div.flex.flex-col.tablet\\:grid.tablet\\:grid-cols-12 a.outline.outline-offset-4.outline-brand-black.group"), callback="parse_pilotos"),
+    )
+
+    def parse_pilotos(self, response):
+        piloto_item = PilotosItem()
+        
+        # Encontrando a <dl> com a classe específica
+        dl_elements = response.css('dl.grid.gap-x-normal.gap-y-xs.f1-grid.grid-cols-1.tablet\\:grid-cols-2.items-baseline')
+
+        # Extraindo todos os <dd> dentro da <dl> específica
+        dd_elements = dl_elements.css('dd::text').getall()
+
+        info_piloto = {
+            "nome": response.css('div.f1-container.container.f1-utils-flex-container h1.f1-heading.tracking-normal::text').get(),
+            "equipe": dd_elements[0],
+            "pais_origem": dd_elements[1],
+            "podiums": dd_elements[2],
+            "pontos_carreira": dd_elements[3],
+            "campeonatos_mundiais": dd_elements[5],
+            "data_nascimento": dd_elements[8],
+            "bio": " ".join(list(response.css('div.f1-atomic-wysiwyg p::text').getall())),
+        }
+
+        # Exemplo de como capturar outros campos (ajustar de acordo com a estrutura real)
+        piloto_item["nome"] = info_piloto["nome"]
+        piloto_item["equipe"] = info_piloto["equipe"]
+        piloto_item["pais_origem"] = info_piloto["pais_origem"]
+        piloto_item["podiums"] = info_piloto["podiums"]
+        piloto_item["pontos_carreira"] = info_piloto["pontos_carreira"]
+        piloto_item["campeonatos_mundiais"] = info_piloto["campeonatos_mundiais"]
+        piloto_item["data_nascimento"] = info_piloto["data_nascimento"]
+        piloto_item["bio"] = info_piloto["bio"]
+        
+        return piloto_item
+
+
+# equipesscraper.py
+
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
+from workshopbrisa.items import EquipesItem
+
+
+class EquipesScraper(CrawlSpider):
+    name = "equipes_scraper"
+    start_urls = ["https://www.formula1.com/en/teams.html"]
+
+    rules = (
+        Rule(LinkExtractor(restrict_css="div.flex.flex-col.tablet\\:grid.tablet\\:grid-cols-12 a.outline.outline-offset-4.outline-brand-black.group"), callback="parse_equipes"),
+    )
+
+    def parse_equipes(self, response):
+        equipe_item = EquipesItem()
+
+        # Encontrando a <dl> com a classe específica
+        dl_elements = response.css('dl.grid.gap-x-normal.gap-y-xs.f1-grid.grid-cols-1.tablet\\:grid-cols-2.items-baseline')
+
+        # Extraindo todos os <dd> dentro da <dl> específica
+        dd_elements = dl_elements.css('dd::text').getall()
+
+        info_equipe = {
+            "nome": response.css('div.f1-container.container.f1-utils-flex-container h1.f1-heading.tracking-normal::text').get(), 
+            "nome_completo": dd_elements[0],
+            "localizacao_base": dd_elements[1],
+            "chefe_equipe": dd_elements[2],
+            "chefe_tecnico": dd_elements[3],
+            "chassis_carro": dd_elements[4],
+            "unidade_potencia": dd_elements[5],
+            "ano_estreia": dd_elements[6],
+            "campeonatos_mundiais": dd_elements[7],
+            "bio": response.css('div.f1-atomic-wysiwyg p::text').getall()[0],
+        }
+        
+        print(dd_elements)
+
+        # Exemplo de como capturar outros campos (ajustar de acordo com a estrutura real)
+        equipe_item["nome"] = info_equipe["nome"]
+        equipe_item["nome_completo"] = info_equipe["nome_completo"]
+        equipe_item["localizacao_base"] = info_equipe["localizacao_base"]
+        equipe_item["chefe_equipe"] = info_equipe["chefe_equipe"]
+        equipe_item["chefe_tecnico"] = info_equipe["chefe_tecnico"]
+        equipe_item["chassis_carro"] = info_equipe["chassis_carro"]
+        equipe_item["unidade_potencia"] = info_equipe["unidade_potencia"]
+        equipe_item["campeonatos_mundiais"] = info_equipe["campeonatos_mundiais"]
+        equipe_item["ano_estreia"] = info_equipe["ano_estreia"]
+        equipe_item["bio"] = info_equipe["bio"]
+
+        return equipe_item
+
+
+# resultados_corridasscraper.py
+from scrapy import Request
+from scrapy.spiders import CrawlSpider
+from scrapy.linkextractors import LinkExtractor
+from workshopbrisa.items import ResultadoCorridasItem
+from datetime import datetime
+
+
+class ResultadoCorridasScraper(CrawlSpider):
+    name = "resultadoscorridas_scraper"
+    
+    # Definindo os anos de interesse
+    anos = range(2000, datetime.now().year+1)  # Exemplo: anos de 2022 a 2024
+    
+    # Gerando as URLs dinamicamente
+    start_urls = [f"https://www.formula1.com/en/results.html/{ano}/races.html" for ano in anos]
+
+    def start_requests(self):
+        for url in self.start_urls:
+            yield Request(url=url, callback=self.parse)
+
+    def parse(self, response):
+        # Encontrando a tabela específica
+        tabela_resultados_ano = response.css('div.table-wrap table.resultsarchive-table')
+
+        # Extraindo os dados da tabela
+        for linha in tabela_resultados_ano.css('tr'):
+            item = ResultadoCorridasItem()
+
+            item["grande_premio"] = str(linha.css('td a::text').get()).strip()
+            item["data"] = linha.css('td:nth-child(3)::text').get()
+            item["vencedor"] = f"{linha.css('td:nth-child(4) span.hide-for-tablet::text').get().strip()} {linha.css('td:nth-child(4) span.hide-for-mobile::text').get().strip()}"
+            item["equipe"] = linha.css('td:nth-child(5)::text').get()
+            item["voltas"] = linha.css('td:nth-child(6)::text').get()
+            item["tempo_total"] = linha.css('td:nth-child(7)::text').get()
+
+            yield item
 
 ```
 
-5. Criar o arquivo pipeline.py que fará o tratamento dos dados coletados em cada raspador e o salvamento no banco de dados (cada raspador terá seu pipeline)
+5. Criar o arquivo pipeline.py que fará o tratamento dos dados coletados em cada raspador e o salvamento no banco de dados 
+(um pipeline será utilizado na execução de qualquer raspador)
 ```py
+# Define your item pipelines here
+#
+# Don't forget to add your pipeline to the ITEM_PIPELINES setting
+# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+
+
+# useful for handling different item types with a single interface
+from itemadapter import ItemAdapter
+import psycopg2
+import dotenv, os
+from datetime import datetime
+from workshopbrisa.items import *
+
+dotenv.load_dotenv('../.env')
+
+
+class WorkshopbrisaPipeline:
+    def open_spider(self, spider):
+        # Cria a conexão com o banco de dados ao iniciar o raspador e já cria o cursor
+        self.connection = psycopg2.connect(
+            host=os.getenv('DB_HOST'),
+            port=os.getenv('DB_PORT'),
+            database=os.getenv('DB_NAME'),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD')
+        )
+
+        self.cursor = self.connection.cursor()
+
+    def close_spider(self, spider):
+        self.cursor.close()
+        self.connection.close()
+
+    def process_item(self, item, spider):
+        
+        if isinstance(item, PilotosItem):
+            self.cursor.execute('''
+                INSERT INTO pilotos (\
+                    nome, equipe, pais_origem, podiums, \
+                    pontos_carreira, campeonatos_mundiais, data_nascimento, bio) \
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (
+                item['nome'],
+                item['equipe'],
+                item['pais_origem'],
+                int(item['podiums']),
+                float(item['pontos_carreira']),
+                int(item['campeonatos_mundiais']),
+                datetime.strptime(item["data_nascimento"], '%d/%m/%Y').date(),
+                item['bio'],
+            ))
+
+        elif isinstance(item, EquipesItem):
+            self.cursor.execute('''
+            INSERT INTO equipes (\
+                nome, nome_completo, localizacao_base, chefe_equipe, chefe_tecnico, \
+                chassis_carro, unidade_potencia, campeonatos_mundiais, ano_estreia, bio) \
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (
+            item['nome'],
+            item['nome_completo'],
+            item['localizacao_base'],
+            item['chefe_equipe'],
+            item['chefe_tecnico'],
+            item['chassis_carro'],
+            item['unidade_potencia'],
+            int(item["campeonatos_mundiais"]),
+            int(item["ano_estreia"]),
+            item['bio'],
+            ))
+
+        else:
+            self.cursor.execute('''
+            INSERT INTO resultados_corridas \
+                (grande_premio, data_gp, piloto_vencedor, equipe, voltas, tempo_total) \
+                VALUES (%s, %s, %s, %s, %s, %s)
+            ''', (
+            str(item['grande_premio']),
+            datetime.strptime(item['data'], '%d %b %Y').date(),
+            item['vencedor'],
+            item['equipe'],
+            int(item['voltas']),
+            f"0 {item['tempo_total']}"
+            ))
+
+        self.connection.commit()
+        
+        return item
+
 ```
 
-6. Configurar cada pipeline no settings.py do projeto
+6. Fazer a consulta dos dados executando o script `main.py` localizado na base do projeto.
