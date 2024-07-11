@@ -57,5 +57,7 @@ CREATE TABLE resultados_corridas (
     piloto_vencedor VARCHAR(100),
     equipe VARCHAR(100),
     voltas NUMERIC,
-    tempo_total INTERVAL
+    tempo_total INTERVAL,
+
+    PRIMARY KEY (grande_premio, data_gp)
 );

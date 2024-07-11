@@ -2,13 +2,14 @@ from scrapy import Request
 from scrapy.spiders import CrawlSpider
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import ResultadoCorridasItem
+from datetime import datetime
 
 
 class ResultadoCorridasScraper(CrawlSpider):
     name = "resultadoscorridas_scraper"
     
     # Definindo os anos de interesse
-    anos = range(2022, 2024)  # Exemplo: anos de 2022 a 2024
+    anos = range(2000, datetime.now().year+1)  # Exemplo: anos de 2022 a 2024
     
     # Gerando as URLs dinamicamente
     start_urls = [f"https://www.formula1.com/en/results.html/{ano}/races.html" for ano in anos]
