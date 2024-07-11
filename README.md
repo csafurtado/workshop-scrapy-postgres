@@ -38,6 +38,9 @@ scrapy startproject workshopbrisa
 
 ```py
 # No arquivo items.py
+from scrapy import Field, Item
+
+
 class PilotosItem(Item):
     nome = Field()
     equipe  = Field()
@@ -214,14 +217,8 @@ class ResultadoCorridasScraper(CrawlSpider):
 
 5. Criar o arquivo pipeline.py que fará o tratamento dos dados coletados em cada raspador e o salvamento no banco de dados 
 (um pipeline será utilizado na execução de qualquer raspador)
+
 ```py
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
-# useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 import psycopg2
 import dotenv, os
@@ -306,4 +303,6 @@ class WorkshopbrisaPipeline:
 
 ```
 
-6. Fazer a consulta dos dados executando o script `main.py` localizado na base do projeto.
+6. 
+
+7. Fazer a consulta dos dados executando o script `main.py` localizado na base do projeto.

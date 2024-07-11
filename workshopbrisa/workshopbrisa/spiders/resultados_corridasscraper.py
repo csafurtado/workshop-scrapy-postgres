@@ -28,7 +28,7 @@ class ResultadoCorridasScraper(CrawlSpider):
 
             item["grande_premio"] = str(linha.css('td a::text').get()).strip()
             item["data"] = linha.css('td:nth-child(3)::text').get()
-            item["vencedor"] = f"{linha.css('td:nth-child(4) span.hide-for-tablet::text').get().strip()} {linha.css('td:nth-child(4) span.hide-for-mobile::text').get().strip()}"
+            item["vencedor"] = f"{linha.css('td:nth-child(4) span.hide-for-tablet::text').get()} {linha.css('td:nth-child(4) span.hide-for-mobile::text').get()}"
             item["equipe"] = linha.css('td:nth-child(5)::text').get()
             item["voltas"] = linha.css('td:nth-child(6)::text').get()
             item["tempo_total"] = linha.css('td:nth-child(7)::text').get()
