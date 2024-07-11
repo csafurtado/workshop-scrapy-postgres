@@ -53,10 +53,11 @@ class WorkshopbrisaPipeline:
         elif isinstance(item, EquipesItem):
             self.cursor.execute('''
             INSERT INTO equipes (\
-                nome, localizacao_base, chefe_equipe, chefe_tecnico, \
+                nome, nome_completo, localizacao_base, chefe_equipe, chefe_tecnico, \
                 chassis_carro, unidade_potencia, campeonatos_mundiais, ano_estreia, bio) \
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''', (
+            item['nome'],
             item['nome_completo'],
             item['localizacao_base'],
             item['chefe_equipe'],

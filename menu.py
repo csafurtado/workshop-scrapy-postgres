@@ -14,8 +14,6 @@ class MenuInterativo:
             password=os.getenv('DB_PASSWORD')
         )
 
-        self.cursor = self.connection.cursor()
-
     def limpar_terminal(self):
         sistema_operacional = platform.system()
         if sistema_operacional == "Windows":
@@ -27,52 +25,183 @@ class MenuInterativo:
         self.limpar_terminal()
         piloto = input("Digite o nome do piloto: ")
         
-        self.cursor.ex
-        # Código para exibir as informações do piloto
-        print(f"Exibindo informações do piloto {piloto}")
+        self.cursor = self.connection.cursor()
+
+        self.cursor.execute(
+                        '''
+                        SELECT * FROM pilotos 
+                        WHERE nome LIKE (%s);
+                        ''', (f'%{piloto.capitalize()}%',)
+                        )
+        
+        result = self.cursor.fetchone()
+
+        if result is None:
+            print(f"*******************************")
+            print("Piloto não encontrado! Tente novamente!")
+            print(f"*******************************")
+            
+        else:
+            print(f"*******************************")
+            print(f"Nome: {result[0]}",
+                f"Equipe Atual: {result[1]}",
+                f"Nascido em: {result[2]}",
+                f"Podiums: {result[3]}",
+                f"Pontos na carreira: {result[4]}",
+                f"Campeonatos Mundiais: {result[5]}",
+                f"Nascido em: {result[6]}",
+                f"\nSobre: {result[7]}", sep="\n")
+            print(f"*******************************")
+        
         input("\nPressione Enter para voltar ao menu...")
 
+        self.cursor.close()
+               
     def ver_info_equipe(self):
         self.limpar_terminal()
         equipe = input("Digite o nome da equipe: ")
-        # Código para exibir as informações da equipe
-        print(f"Exibindo informações da equipe {equipe}")
+        
+        self.cursor = self.connection.cursor()
+
+        self.cursor.execute(
+                        '''
+                        SELECT * FROM equipes 
+                        WHERE nome LIKE (%s);
+                        ''', (f'%{equipe.capitalize()}%',)
+                        )
+        
+        result = self.cursor.fetchone()
+
+        if result is None:
+            print(f"*******************************")
+            print("Equipe não encontrada! Tente novamente!")
+            print(f"*******************************")
+            
+        else:
+            print(f"*******************************")
+            print(f"Nome Completo: {result[1]}",
+                f"Baseado em: {result[2]}",
+                f"Chefe de Equipe: {result[3]}",
+                f"Chefe Técnico: {result[4]}",
+                f"Chassis Atual: {result[5]}",
+                f"Campeonatos Mundiais: {result[6]}",
+                f"Estreou em: {result[7]}",
+                f"\nSobre: {result[8]}", sep="\n")
+            print(f"*******************************")
+
+        self.cursor.close()
         input("\nPressione Enter para voltar ao menu...")
 
     def ver_grid_atual(self):
         self.limpar_terminal()
-        # Código para exibir os pilotos ou equipes atuais do grid
-        print("Exibindo pilotos e equipes atuais do grid")
+        self.cursor = self.connection.cursor()
+
+        self.cursor.execute(
+                        '''
+                        SELECT nome, equipe FROM pilotos;
+                        '''
+                        )
+        
+        result = self.cursor.fetchall()
+
+
+        print(f"*******************************")
+
+        is_tab = False
+
+        for linha in result:
+            if is_tab:
+                print(f"\tPiloto: {linha[0]}\n\tEquipe: {linha[1]}")
+            else:
+                print(f"Piloto: {linha[0]}\nEquipe: {linha[1]}")
+            
+            print(f"*******************************")
+            
+            is_tab = not is_tab
+            
+
+        self.cursor.close()
+        
         input("\nPressione Enter para voltar ao menu...")
 
     def ver_vitorias_piloto(self):
         self.limpar_terminal()
         piloto = input("Digite o nome do piloto: ")
-        # Código para exibir a quantidade de vitórias do piloto
+
+        self.cursor = self.connection.cursor()
+        
+        self.cursor.execute(
+            '''
+            SELECT nome FROM pilotos
+            WHERE nome LIKE (%s)
+            ''', (f'%{piloto.capitalize()}%',)
+        )
+        
+        nome_piloto = self.cursor.fetchone()[0]
+        
         self.cursor.execute(
                         '''
-                        SELECT count(piloto_vencedor) FROM resultados_corridas 
-                        WHERE piloto_vencedor = (%s);
-                        ''', (piloto,)
-                        )
+                        SELECT grande_premio, COUNT(piloto_vencedor) 
+                        FROM resultados_corridas 
+                        WHERE piloto_vencedor LIKE (%s)
+                        GROUP BY grande_premio;
+                        ''', (f'%{piloto.capitalize()}%',)
+                        )        
         
-        result = self.cursor.fetchone()
+        result = self.cursor.fetchall()
         
-        print(f"Exibindo a quantidade de vitórias do piloto {piloto}: {result[0]}")
-        input("\nPressione Enter para voltar ao menu...")
+        if len(result) == 0:
+            print("*****************************")
+            print("Não foram encontradas vitórias para este piloto!")
+            print("*****************************\n")
+        
+        else:
+            print("\n\n")
+            print("*****************************")
+            
+            print(f"PILOTO: {str(nome_piloto).upper()}")
+            print("==================================\n")
+            for linha in result:
+                print(f"{linha[0]}: {linha[1]} Vitórias")
+
+            self.cursor.execute(
+                '''
+                SELECT COUNT(piloto_vencedor)
+                FROM resultados_corridas 
+                WHERE piloto_vencedor LIKE (%s);
+                ''', (f'%{piloto.capitalize()}%',)
+                )
+        
+            result = self.cursor.fetchone()
+            
+            print(f"\n=====================")
+            print(f"TOTAL: {result[0]} Vitórias")
+            print(f"=====================\n")
+
+        print("*****************************")
+        
+        input("\n\nPressione Enter para voltar ao menu...")
+
+        self.cursor.close()
+
+    def encerrar(self):
+        print("Saindo...")
+        
+        self.connection.close()
+        
 
     def menu(self):
         while True:
             self.limpar_terminal()
-            print("+-------------------------------+")
-            print("|           Menu de escolhas           |")
-            print("+-------------------------------+")
-            print("| 1- Ver informação de um piloto         |")
-            print("| 2- Ver informação de uma equipe        |")
-            print("| 3- Ver pilotos ou equipes atuais do Grid |")
-            print("| 4- Ver quantidade de vitórias de um piloto |")
-            print("| 5- Sair                         |")
-            print("+-------------------------------+")
+            print("+---------------------------------------------+")
+            print("|                   F1 INFO                   |")
+            print("+---------------------------------------------+")
+            print("| 1- Ver informação de um piloto              |")
+            print("| 2- Ver informação de uma equipe             |")
+            print("| 3- Ver pilotos ou equipes atuais do Grid    |")
+            print("| 4- Ver quantidade de vitórias de um piloto  |")
+            print("| 5- Sair                                     |")
+            print("+---------------------------------------------+\n")
 
             escolha = input("Escolha uma opção: ")
 
@@ -85,8 +214,8 @@ class MenuInterativo:
             elif escolha == '4':
                 self.ver_vitorias_piloto()
             elif escolha == '5':
-                self.limpar_terminal()
-                print("Saindo...")
+                self.encerrar()
+                
                 break
             else:
                 self.limpar_terminal()

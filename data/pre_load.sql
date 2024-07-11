@@ -29,7 +29,8 @@ DROP TABLE IF EXISTS resultados_corridas;
 ---
 
 CREATE TABLE equipes (
-    nome VARCHAR(100) PRIMARY KEY,
+    nome VARCHAR(50) PRIMARY KEY,
+    nome_completo VARCHAR(100),
     localizacao_base VARCHAR(100),
     chefe_equipe VARCHAR(100),
     chefe_tecnico VARCHAR(100),
