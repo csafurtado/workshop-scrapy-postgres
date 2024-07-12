@@ -1,6 +1,10 @@
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import PilotosItem
+from deep_translator import GoogleTranslator
+
+tradutor = GoogleTranslator(source='en', target='pt')
+
 
 class PilotosScraper(CrawlSpider):
     name = "pilotos_scraper"
@@ -30,15 +34,14 @@ class PilotosScraper(CrawlSpider):
             "bio": " ".join(list(response.css('div.f1-atomic-wysiwyg p::text').getall())),
         }
 
-        # Exemplo de como capturar outros campos (ajustar de acordo com a estrutura real)
         piloto_item["nome"] = info_piloto["nome"]
         piloto_item["equipe"] = info_piloto["equipe"]
-        piloto_item["pais_origem"] = info_piloto["pais_origem"]
+        piloto_item["pais_origem"] = tradutor.translate(info_piloto["pais_origem"])
         piloto_item["podiums"] = info_piloto["podiums"]
         piloto_item["pontos_carreira"] = info_piloto["pontos_carreira"]
         piloto_item["campeonatos_mundiais"] = info_piloto["campeonatos_mundiais"]
         piloto_item["data_nascimento"] = info_piloto["data_nascimento"]
-        piloto_item["bio"] = info_piloto["bio"]
+        piloto_item["bio"] = tradutor.translate(info_piloto["bio"])
         
         return piloto_item
 

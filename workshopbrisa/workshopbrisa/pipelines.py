@@ -1,10 +1,3 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
-# useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 import psycopg2
 import dotenv, os
@@ -34,6 +27,10 @@ class WorkshopbrisaPipeline:
     def process_item(self, item, spider):
         
         if isinstance(item, PilotosItem):
+            
+            if item["nome"] is None:
+                return
+            
             self.cursor.execute('''
                 INSERT INTO pilotos (\
                     nome, equipe, pais_origem, podiums, \
@@ -51,6 +48,9 @@ class WorkshopbrisaPipeline:
             ))
 
         elif isinstance(item, EquipesItem):
+            if item["nome"] is None:
+                return
+            
             self.cursor.execute('''
             INSERT INTO equipes (\
                 nome, nome_completo, localizacao_base, chefe_equipe, chefe_tecnico, \
@@ -70,6 +70,9 @@ class WorkshopbrisaPipeline:
             ))
 
         else:
+            if item["vencedor"] is None:
+                return
+            
             self.cursor.execute('''
             INSERT INTO resultados_corridas \
                 (grande_premio, data_gp, piloto_vencedor, equipe, voltas, tempo_total) \

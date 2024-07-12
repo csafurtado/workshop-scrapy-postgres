@@ -1,6 +1,9 @@
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import EquipesItem
+from deep_translator import GoogleTranslator
+
+tradutor = GoogleTranslator(source='en', target='pt')
 
 
 class EquipesScraper(CrawlSpider):
@@ -45,7 +48,7 @@ class EquipesScraper(CrawlSpider):
         equipe_item["unidade_potencia"] = info_equipe["unidade_potencia"]
         equipe_item["campeonatos_mundiais"] = info_equipe["campeonatos_mundiais"]
         equipe_item["ano_estreia"] = info_equipe["ano_estreia"]
-        equipe_item["bio"] = info_equipe["bio"]
+        equipe_item["bio"] = tradutor.translate(info_equipe["bio"])
 
         return equipe_item
 

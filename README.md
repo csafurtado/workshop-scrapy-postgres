@@ -79,6 +79,10 @@ class ResultadoCorridasItem(Item):
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import PilotosItem
+from deep_translator import GoogleTranslator
+
+tradutor = GoogleTranslator(source='en', target='pt')
+
 
 class PilotosScraper(CrawlSpider):
     name = "pilotos_scraper"
@@ -108,24 +112,27 @@ class PilotosScraper(CrawlSpider):
             "bio": " ".join(list(response.css('div.f1-atomic-wysiwyg p::text').getall())),
         }
 
-        # Exemplo de como capturar outros campos (ajustar de acordo com a estrutura real)
         piloto_item["nome"] = info_piloto["nome"]
         piloto_item["equipe"] = info_piloto["equipe"]
-        piloto_item["pais_origem"] = info_piloto["pais_origem"]
+        piloto_item["pais_origem"] = tradutor.translate(info_piloto["pais_origem"])
         piloto_item["podiums"] = info_piloto["podiums"]
         piloto_item["pontos_carreira"] = info_piloto["pontos_carreira"]
         piloto_item["campeonatos_mundiais"] = info_piloto["campeonatos_mundiais"]
         piloto_item["data_nascimento"] = info_piloto["data_nascimento"]
-        piloto_item["bio"] = info_piloto["bio"]
+        piloto_item["bio"] = tradutor.translate(info_piloto["bio"])
         
         return piloto_item
 
 
-# equipesscraper.py
 
+
+# equipesscraper.py
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import EquipesItem
+from deep_translator import GoogleTranslator
+
+tradutor = GoogleTranslator(source='en', target='pt')
 
 
 class EquipesScraper(CrawlSpider):
@@ -170,9 +177,11 @@ class EquipesScraper(CrawlSpider):
         equipe_item["unidade_potencia"] = info_equipe["unidade_potencia"]
         equipe_item["campeonatos_mundiais"] = info_equipe["campeonatos_mundiais"]
         equipe_item["ano_estreia"] = info_equipe["ano_estreia"]
-        equipe_item["bio"] = info_equipe["bio"]
+        equipe_item["bio"] = tradutor.translate(info_equipe["bio"])
 
         return equipe_item
+
+
 
 
 # resultados_corridasscraper.py
@@ -206,7 +215,7 @@ class ResultadoCorridasScraper(CrawlSpider):
 
             item["grande_premio"] = str(linha.css('td a::text').get()).strip()
             item["data"] = linha.css('td:nth-child(3)::text').get()
-            item["vencedor"] = f"{linha.css('td:nth-child(4) span.hide-for-tablet::text').get().strip()} {linha.css('td:nth-child(4) span.hide-for-mobile::text').get().strip()}"
+            item["vencedor"] = f"{linha.css('td:nth-child(4) span.hide-for-tablet::text').get()} {linha.css('td:nth-child(4) span.hide-for-mobile::text').get()}"
             item["equipe"] = linha.css('td:nth-child(5)::text').get()
             item["voltas"] = linha.css('td:nth-child(6)::text').get()
             item["tempo_total"] = linha.css('td:nth-child(7)::text').get()
@@ -248,6 +257,10 @@ class WorkshopbrisaPipeline:
     def process_item(self, item, spider):
         
         if isinstance(item, PilotosItem):
+            
+            if item["nome"] is None:
+                return
+            
             self.cursor.execute('''
                 INSERT INTO pilotos (\
                     nome, equipe, pais_origem, podiums, \
@@ -265,6 +278,9 @@ class WorkshopbrisaPipeline:
             ))
 
         elif isinstance(item, EquipesItem):
+            if item["nome"] is None:
+                return
+            
             self.cursor.execute('''
             INSERT INTO equipes (\
                 nome, nome_completo, localizacao_base, chefe_equipe, chefe_tecnico, \
@@ -284,6 +300,9 @@ class WorkshopbrisaPipeline:
             ))
 
         else:
+            if item["vencedor"] is None:
+                return
+            
             self.cursor.execute('''
             INSERT INTO resultados_corridas \
                 (grande_premio, data_gp, piloto_vencedor, equipe, voltas, tempo_total) \
@@ -303,6 +322,6 @@ class WorkshopbrisaPipeline:
 
 ```
 
-6. 
+6. Fazer a raspagem de cada item (pilotos, equipes e resultados de corridas) pelo comando `scrapy crawl <nome_definido_no_raspador>` na base da pasta workshopbrisa (projeto scrapy)
 
 7. Fazer a consulta dos dados executando o script `main.py` localizado na base do projeto.

@@ -84,9 +84,10 @@ class MenuInterativo:
                 f"Chefe de Equipe: {result[3]}",
                 f"Chefe Técnico: {result[4]}",
                 f"Chassis Atual: {result[5]}",
-                f"Campeonatos Mundiais: {result[6]}",
-                f"Estreou em: {result[7]}",
-                f"\nSobre: {result[8]}", sep="\n")
+                f"Unidade de Potência: {result[6]}",
+                f"Campeonatos Mundiais: {result[7]}",
+                f"Estreou em: {result[8]}",
+                f"\nSobre: {result[9]}", sep="\n")
             print(f"*******************************")
 
         self.cursor.close()
@@ -136,8 +137,20 @@ class MenuInterativo:
             WHERE nome LIKE (%s)
             ''', (f'%{piloto.capitalize()}%',)
         )
+         
+        nome_piloto = self.cursor.fetchone()
         
-        nome_piloto = self.cursor.fetchone()[0]
+        if nome_piloto is None:
+            print(f"*******************************")
+            print("Piloto não encontrado! Tente novamente!")
+            print(f"*******************************")
+
+            input("\n\nPressione Enter para voltar ao menu...")
+            
+            return
+        
+        
+        nome_piloto = nome_piloto[0]
         
         self.cursor.execute(
                         '''
@@ -152,8 +165,8 @@ class MenuInterativo:
         
         if len(result) == 0:
             print("*****************************")
-            print("Não foram encontradas vitórias para este piloto!")
-            print("*****************************\n")
+            print(f"O piloto {nome_piloto} ainda não tem vitórias!")
+
         
         else:
             print("\n\n")
