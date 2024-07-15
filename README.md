@@ -28,16 +28,16 @@ podman-compose up --detach
 cat configs_podman.txt  > ~/.config/cni/net.d/workshop_brisa_default.conflist
 ```
 
-2. Iniciar um projeto scrapy pelo comando no terminal:
+2. Iniciar um projeto scrapy pelo comando no terminal e entrar na pasta do projeto recém criado:
 
 ```bash
 scrapy startproject workshopbrisa
+cd workshopbrisa
 ```
 
-3. Criar os itens de dados que serão raspados
+3. Criar os itens de dados que serão raspados no arquivo items.py
 
 ```py
-# No arquivo items.py
 from scrapy import Field, Item
 
 
@@ -72,10 +72,10 @@ class ResultadoCorridasItem(Item):
     tempo_total = Field()
 ```
 
-4. Criar os arquivos que ficaram responsáveis pela raspagem dos dados, acessando o site e retirando as informações
+4. Criar os arquivos que ficaram responsáveis pela raspagem dos dados (spiders ou scrapers) dentro da pasta 'spiders', acessando o site e retirando as informações
 
 ```py
-# pilotosscraper.py, 
+# Arquivo pilotosscraper.py
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import PilotosItem
@@ -124,9 +124,7 @@ class PilotosScraper(CrawlSpider):
         return piloto_item
 
 
-
-
-# equipesscraper.py
+# Arquivo pequipesscraper.py
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import EquipesItem
@@ -182,9 +180,7 @@ class EquipesScraper(CrawlSpider):
         return equipe_item
 
 
-
-
-# resultados_corridasscraper.py
+# Arquivo presultados_corridasscraper.py
 from scrapy import Request
 from scrapy.spiders import CrawlSpider
 from scrapy.linkextractors import LinkExtractor
@@ -321,7 +317,18 @@ class WorkshopbrisaPipeline:
         return item
 
 ```
+6. Configurar o `settings.py` para utilizar a pipeline criada:
+```py
+# No settings.py
 
-6. Fazer a raspagem de cada item (pilotos, equipes e resultados de corridas) pelo comando `scrapy crawl <nome_definido_no_raspador>` na base da pasta workshopbrisa (projeto scrapy)
+# (...)
 
-7. Fazer a consulta dos dados executando o script `main.py` localizado na base do projeto.
+# Set spiders configurations
+ITEM_PIPELINES = {
+    'workshopbrisa.pipelines.WorkshopbrisaPipeline': 300,
+}
+```
+
+7. Fazer a raspagem de cada item (pilotos, equipes e resultados de corridas) pelo comando `scrapy crawl <nome_definido_no_raspador>` na base da pasta workshopbrisa (projeto scrapy)
+
+8. Fazer a consulta dos dados executando o script `main.py` localizado na base do projeto.
