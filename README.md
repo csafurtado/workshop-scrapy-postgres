@@ -20,12 +20,8 @@ pip install -r requirements.txt
 
 # Criando as variáveis de ambienteevantando o container
 cp env_local.env .env
-podman-compose up --detach
-```
-
-* Caso dê erro de versão do CNI, executar o seguinte comando:
-```bash
 cat configs_podman.txt  > ~/.config/cni/net.d/workshop_brisa_default.conflist
+podman-compose up --detach
 ```
 
 2. Iniciar um projeto scrapy pelo comando no terminal e entrar na pasta do projeto recém criado:
@@ -124,7 +120,7 @@ class PilotosScraper(CrawlSpider):
         return piloto_item
 
 
-# Arquivo pequipesscraper.py
+# Arquivo equipesscraper.py
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from workshopbrisa.items import EquipesItem
@@ -180,7 +176,7 @@ class EquipesScraper(CrawlSpider):
         return equipe_item
 
 
-# Arquivo presultados_corridasscraper.py
+# Arquivo resultados_corridasscraper.py
 from scrapy import Request
 from scrapy.spiders import CrawlSpider
 from scrapy.linkextractors import LinkExtractor
@@ -220,7 +216,7 @@ class ResultadoCorridasScraper(CrawlSpider):
 
 ```
 
-5. Criar o arquivo pipeline.py que fará o tratamento dos dados coletados em cada raspador e o salvamento no banco de dados 
+5. Criar o arquivo pipelines.py que fará o tratamento dos dados coletados em cada raspador e o salvamento no banco de dados 
 (um pipeline será utilizado na execução de qualquer raspador)
 
 ```py
@@ -331,4 +327,4 @@ ITEM_PIPELINES = {
 
 7. Fazer a raspagem de cada item (pilotos, equipes e resultados de corridas) pelo comando `scrapy crawl <nome_definido_no_raspador>` na base da pasta workshopbrisa (projeto scrapy)
 
-8. Fazer a consulta dos dados executando o script `main.py` localizado na base do projeto.
+8. Fazer a consulta dos dados executando o script `main.py` localizado na base do projeto pelo comando `python main.py`.
